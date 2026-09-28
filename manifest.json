@@ -13,12 +13,15 @@
   ],
   "action": {
     "default_popup": "options.html"
+  }, 
+  "background": {
+    "service_worker": "service-worker.js"
   },
   "content_scripts": [
     {
-      "matches": ["https://*/*", "http://*/*"],
-      "js": ["options.js"],
-      "css": ["styles.css"]
+      "matches": ["<all_urls>"],
+      "js": ["content-script.js"],
+      "run_at": "document_idle"
     }
   ]
  

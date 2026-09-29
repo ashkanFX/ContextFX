@@ -34,7 +34,7 @@ The extension should allow a user to:
 ### Recommended structure for this feature
 Create a separate module dedicated to language conversion, such as:
 - `src/translator/` for translation logic
-- `src/shared/` for common helpers and data models
+- `src/shared/` for common helpers, logging, and data models
 - `src/extension/` for browser-extension behavior
 
 This keeps the translator logic separate from the browser UI and makes future feature work easier.
@@ -60,6 +60,7 @@ ContextFX/
 │   ├── translator/
 │   │   └── text translation and language conversion
 │   └── shared/
+│       ├── logger.js
 │       └── common utilities and storage helpers
 ├── docs/
 │   └── feature notes and future planning

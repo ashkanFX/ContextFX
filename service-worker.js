@@ -8,6 +8,8 @@ const logger = globalThis.ContextFXLogger ? globalThis.ContextFXLogger('service-
   debug: () => {},
 };
 
+
+
 chrome.runtime.onMessage.addListener((message, sender) => {
   if(message && message.type === 'save-word'){
     const word = message.word || '';

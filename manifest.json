@@ -12,7 +12,7 @@
     "scripting"
   ],
   "action": {
-    "default_popup": "options.html"
+    "default_popup": "popup/popup.html"
   }, 
   "background": {
     "service_worker": "service-worker.js"

@@ -1,47 +1,30 @@
 # ContextFX
 
-**ContextFX** is a Chrome Extension designed to help readers capture, track, and analyze new vocabulary while browsing the web. Stop losing your reading flow to dictionary tabs—build your own vocabulary database right where you learn.
+ContextFX is a small Chrome extension that helps readers capture and track new vocabulary while browsing. Click any word on a page to highlight and save it; view and manage saved words on the Options page.
 
-## 🚀 The Mission
-ContextFX helps you save unknown words instantly, store their meanings, and provides an "Importance/Usage" analysis so you can focus your learning on the words that actually matter.
+## Features
+- Click-to-save: click a word on any page to highlight and save it.
+- Local vocabulary dashboard: view, search, add, and delete words from the Options page.
+- Persistent storage using `chrome.storage.local` (data stays on your device).
 
-## ✨ Key Features (MVP)
-*   **Right-Click Capture:** Highlight any word on a webpage and save it instantly.
-*   **Vocabulary Dashboard:** A clean, searchable table view of all your saved words.
-*   **Importance Scoring:** Track how often you see a word or assign it an importance rating.
-*   **Manual Definitions:** Edit and save personalized meanings for the words you collect.
-*   **Data Portability:** Export your entire vocabulary list to CSV whenever you need.
+## Architecture
+- Chrome Manifest V3
+- Content script: detects clicks and highlights the clicked word (`content-script.js`).
+- Background service worker: receives save requests and persists entries (`service-worker.js`).
+- Options page: UI for managing vocabulary (`options.html`, `options.js`, `styles.css`).
 
-## 🏗️ Technical Architecture
-Built using **Chrome Manifest V3** for performance and security:
-*   **Content Script:** Detects selections and injects the context menu.
-*   **Service Worker:** Handles storage operations and background logic.
-*   **Options Page:** The main dashboard (Table) where you manage your vocabulary list.
-*   **Storage:** Uses `chrome.storage.local` to keep your data private and on your machine.
+## Development / Run locally
+1. Clone the repo and open Chrome's extensions page: `chrome://extensions/`.
+2. Enable **Developer mode**.
+3. Click **Load unpacked** and select this project folder.
+4. Open any webpage, click a word to save it, then open the extension Options page (via the extension entry or `options.html`) to view saved words.
 
-## 🛠️ Getting Started
-To run ContextFX in development mode:
+## Notes
+- The extension saves simple records: `{ word, url, created }` and ignores exact duplicates for the same page.
+- Icons and additional UX features (importance rating, CSV export) are TODOs.
 
-1.  **Clone this repository** to your local machine.
-2.  **Open Chrome** and navigate to `chrome://extensions/`.
-3.  **Toggle "Developer mode"** in the top right corner.
-4.  **Click "Load unpacked"** and select your project folder.
-5.  **Refresh** any open tab to start using the extension.
+## Contributing
+PRs and improvements welcome. If you want a build-based stylesheet (Tailwind build), I can add a small build step.
 
-## 📋 Development Roadmap
-- [ ] **Phase 1:** Setup manifest.json and boilerplate.
-- [ ] **Phase 2:** Implement "Right-click to save" functionality.
-- [ ] **Phase 3:** Create the Vocabulary Table (Options page).
-- [ ] **Phase 4:** Add "Importance Rating" logic.
--4.  **Click "Load unpacked"** and select your project folder.
-5.  **Refresh** any open tab to start using the extension.
-
-## 📋 Development Roadmap
-- [ ] **Phase 1:** Setup manifest.json and boilerplate.
-- [ ] **Phase 2:** Implement "Right-click to save" functionality.
-- [ ] **Phase 3:** Create the Vocabulary Table (Options page).
-- [ ] **Phase 4:** Add "Importance Rating" logic.
-- [ ] **Phase 5:** Add Export to CSV feature.
-
-## 📝 License
-[Specify your license, e.g., MIT License]
+## License
+Specify a license (e.g., MIT) if you plan to publish this project.

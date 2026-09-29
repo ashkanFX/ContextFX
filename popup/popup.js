@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const logger = globalThis.ContextFXLogger ? globalThis.ContextFXLogger('popup') : {
+    info: () => {},
+    warn: () => {},
+    error: () => {},
+    debug: () => {},
+  };
+
   const totalWordsEl = document.getElementById('totalWords');
   const uniqueWordsEl = document.getElementById('uniqueWords');
   const latestWordEl = document.getElementById('latestWord');
@@ -52,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   openOptionsBtn.addEventListener('click', () => {
+    logger.info('Opening vocabulary page');
     if (chrome.runtime.openOptionsPage) {
       chrome.runtime.openOptionsPage();
     } else {
@@ -60,10 +68,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   clearWordsBtn.addEventListener('click', () => {
+    logger.warn('Clearing saved words');
     chrome.storage.local.set({ vocab: [] }, () => {
       loadWords();
     });
   });
 
+  logger.info('Popup loaded');
   loadWords();
 });

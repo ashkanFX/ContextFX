@@ -31,9 +31,3 @@ function getLogger(namespace, level = DEFAULT_LEVEL) {
     error: (message, data) => log(message, data, LOG_LEVELS.ERROR),
   };
 }
-
-window.ContextFXLogger = getLogger;
-
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { getLogger, LOG_LEVELS };
-}

@@ -202,3 +202,16 @@ button:hover {
   color: var(--danger);
   border: 1px solid rgba(239, 68, 68, 0.12);
 }
+
+.secondary-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.export-status {
+  min-height: 14px;
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+}

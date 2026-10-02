@@ -70,6 +70,27 @@ a {
   color: #51471f;
 }
 
+.dictionary-language,
+.dictionary-example,
+.dictionary-attribution {
+  color: #51471f;
+  display: block;
+  font-size: 10px;
+}
+
+.dictionary-meaning {
+  margin: 4px 0 2px;
+}
+
+.dictionary-terms {
+  font-size: 10px;
+  margin: 3px 0;
+}
+
+.dictionary-attribution {
+  margin-top: 5px;
+}
+
 .empty-report {
   color: #51471f;
   text-align: center;

@@ -72,6 +72,7 @@
         word,
         url: location.href,
         title: document.title,
+        language: ((document.documentElement && document.documentElement.lang) || 'en').split(/[-_]/)[0].toLowerCase(),
         pageContent: (document.body && document.body.innerText || '').slice(0, 12000),
       }, () => {}); // Save the word and a bounded text snapshot of its page.
     }

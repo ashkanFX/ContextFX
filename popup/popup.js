@@ -7,6 +7,76 @@ document.addEventListener('DOMContentLoaded', () => {
   const clearWordsBtn = document.getElementById('clearWords');
   const exportPdfBtn = document.getElementById('exportPdf');
 
+  function appendDictionaryDetails(container, dictionary) {
+    if (!dictionary) return;
+
+    const details = document.createElement('section');
+    details.className = 'dictionary-details';
+
+    const heading = document.createElement('small');
+    heading.className = 'dictionary-heading';
+    heading.textContent = [dictionary.language.name, ...dictionary.pronunciations].filter(Boolean).join(' · ');
+    details.appendChild(heading);
+
+    dictionary.definitions.slice(0, 3).forEach(definition => {
+      const meaning = document.createElement('p');
+      meaning.className = 'dictionary-meaning';
+      if (definition.partOfSpeech) {
+        const partOfSpeech = document.createElement('strong');
+        partOfSpeech.textContent = `${definition.partOfSpeech}: `;
+        meaning.appendChild(partOfSpeech);
+      }
+      meaning.appendChild(document.createTextNode(definition.definition));
+      details.appendChild(meaning);
+
+      if (definition.examples.length) {
+        const example = document.createElement('small');
+        example.className = 'dictionary-example';
+        example.textContent = `Example: ${definition.examples[0]}`;
+        details.appendChild(example);
+      }
+    });
+
+    if (dictionary.synonyms.length) {
+      const synonyms = document.createElement('small');
+      synonyms.className = 'dictionary-terms';
+      synonyms.textContent = `Synonyms: ${dictionary.synonyms.join(', ')}`;
+      details.appendChild(synonyms);
+    }
+    if (dictionary.antonyms.length) {
+      const antonyms = document.createElement('small');
+      antonyms.className = 'dictionary-terms';
+      antonyms.textContent = `Antonyms: ${dictionary.antonyms.join(', ')}`;
+      details.appendChild(antonyms);
+    }
+
+    const attribution = document.createElement('small');
+    attribution.className = 'dictionary-attribution';
+    if (dictionary.source.url) {
+      const sourceLink = document.createElement('a');
+      sourceLink.href = dictionary.source.url;
+      sourceLink.target = '_blank';
+      sourceLink.rel = 'noopener noreferrer';
+      sourceLink.textContent = 'Source';
+      attribution.append('Source: ', sourceLink);
+    }
+    if (dictionary.source.license.name) {
+      if (attribution.childNodes.length) attribution.append(' · ');
+      if (dictionary.source.license.url) {
+        const licenseLink = document.createElement('a');
+        licenseLink.href = dictionary.source.license.url;
+        licenseLink.target = '_blank';
+        licenseLink.rel = 'noopener noreferrer';
+        licenseLink.textContent = dictionary.source.license.name;
+        attribution.append('License: ', licenseLink);
+      } else {
+        attribution.append(`License: ${dictionary.source.license.name}`);
+      }
+    }
+    if (attribution.childNodes.length) details.appendChild(attribution);
+    container.appendChild(details);
+  }
+
   function renderPopup(items) {
     const words = Array.isArray(items) ? items : [];
     const uniqueWords = ContextFXVocabulary.group(words);
@@ -84,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
       item.append(word, usage, reminder, priorityControl, pageSources);
 
       const latestEntry = [...group.entries].sort((a, b) => (b.created || 0) - (a.created || 0))[0];
+      appendDictionaryDetails(item, latestEntry.dictionary);
       if (latestEntry.pageContent) {
         const snapshot = document.createElement('small');
         snapshot.className = 'page-snapshot';
@@ -117,6 +188,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   exportPdfBtn.addEventListener('click', () => {
     chrome.tabs.create({ url: chrome.runtime.getURL('popup/print.html') });
+  });
+
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local' && changes.vocab) loadWords();
   });
 
   loadWords();

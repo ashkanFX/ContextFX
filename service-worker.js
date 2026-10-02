@@ -1,4 +1,25 @@
-// Background service worker: listens for save-reminder messages and persists to storage
+importScripts('src/shared/dictionary.js');
+
+// Background service worker: looks up and persists saved vocabulary.
+function getDictionary(word, language, vocab) {
+  const normalizedWord = word.trim().toLowerCase();
+  const cached = vocab.find(entry =>
+    (entry.word || '').trim().toLowerCase() === normalizedWord &&
+    entry.dictionary && entry.dictionary.language.code === language
+  );
+  if (cached) return Promise.resolve(cached.dictionary);
+
+  const url = `https://freedictionaryapi.com/api/v1/entries/${language}/${encodeURIComponent(word)}`;
+  return fetch(url)
+    .then(response => {
+      if (!response.ok) throw new Error(`Dictionary lookup failed: ${response.status}`);
+      return response.json();
+    })
+    .then(response => ContextFXDictionary.normalize(response, language))
+    .catch(() => null);
+}
+
+// Background service worker handles reminder and priority messages.
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if(message && message.type === 'set-priority'){
     const word = (message.word || '').trim().toLowerCase();
@@ -20,6 +41,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const url = message.url || (sender && sender.tab && sender.tab.url) || '';
     const title = message.title || '';
     const pageContent = message.pageContent || '';
+    const requestedLanguage = String(message.language || 'en').toLowerCase().split(/[-_]/)[0];
+    const language = /^[a-z]{2,3}$/.test(requestedLanguage) ? requestedLanguage : 'en';
     if(!word) {
       return;
     }
@@ -29,31 +52,36 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const normalizedWord = word.trim().toLowerCase();
       const exists = vocab.find(v => (v.word || '').trim().toLowerCase() === normalizedWord && v.url === url);
 
-      if(exists){
-        Object.assign(exists, {
-          title,
-          pageContent,
-          reminder: true,
-          usageCount: Math.max(1, Number(exists.usageCount) || 1) + 1,
-          priority: exists.priority || 'normal',
-          created: Date.now(),
-        });
-      } else {
-        const priorEntry = vocab.find(entry => (entry.word || '').trim().toLowerCase() === normalizedWord);
-        vocab.push({
-          word,
-          url,
-          title,
-          pageContent,
-          reminder: true,
-          usageCount: 1,
-          priority: priorEntry ? priorEntry.priority || 'normal' : 'normal',
-          created: Date.now(),
-        });
-      }
+      getDictionary(word, language, vocab).then(dictionary => {
+        if(exists){
+          Object.assign(exists, {
+            title,
+            pageContent,
+            reminder: true,
+            usageCount: Math.max(1, Number(exists.usageCount) || 1) + 1,
+            priority: exists.priority || 'normal',
+            created: Date.now(),
+          });
+          if(dictionary) exists.dictionary = dictionary;
+        } else {
+          const priorEntry = vocab.find(entry => (entry.word || '').trim().toLowerCase() === normalizedWord);
+          const entry = {
+            word,
+            url,
+            title,
+            pageContent,
+            reminder: true,
+            usageCount: 1,
+            priority: priorEntry ? priorEntry.priority || 'normal' : 'normal',
+            created: Date.now(),
+          };
+          if(dictionary) entry.dictionary = dictionary;
+          vocab.push(entry);
+        }
 
-      chrome.storage.local.set({vocab}, () => {
+        chrome.storage.local.set({vocab}, () => sendResponse({ok: true, dictionaryAvailable: Boolean(dictionary)}));
       });
     });
+    return true;
   }
 });

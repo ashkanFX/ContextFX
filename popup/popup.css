@@ -212,6 +212,37 @@ h1 {
   -webkit-line-clamp: 2;
 }
 
+.dictionary-details {
+  border-top: 1px solid #e7d889;
+  color: #302a16;
+  margin-top: 6px;
+  padding-top: 6px;
+}
+
+.dictionary-heading,
+.dictionary-example,
+.dictionary-terms,
+.dictionary-attribution {
+  color: #51471f;
+  display: block;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.dictionary-meaning {
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 4px 0 1px;
+}
+
+.dictionary-example {
+  font-style: italic;
+}
+
+.dictionary-attribution {
+  margin-top: 4px;
+}
+
 .empty-state {
   text-align: center;
   color: var(--muted);

@@ -11,6 +11,9 @@
     "contextMenus",
     "scripting"
   ],
+  "host_permissions": [
+    "https://freedictionaryapi.com/*"
+  ],
   "action": {
     "default_popup": "popup/popup.html"
   }, 

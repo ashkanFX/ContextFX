@@ -1,15 +1,14 @@
-importScripts('src/shared/dictionary.js');
+importScripts('../shared/dictionary.js');
 
 // Background service worker: looks up and persists saved vocabulary.
-function getDictionary(word, language, vocab) {
-  const normalizedWord = word.trim().toLowerCase();
+function getDictionary(word, language, vocab) { 
   const cached = vocab.find(entry =>
-    (entry.word || '').trim().toLowerCase() === normalizedWord &&
+    (entry.word || '').trim().toLowerCase() === word.trim().toLowerCase() &&
     entry.dictionary && entry.dictionary.language.code === language
   );
   if (cached) return Promise.resolve(cached.dictionary);
 
-  const url = `https://freedictionaryapi.com/api/v1/entries/${language}/${encodeURIComponent(word)}`;
+  const url = `https://freedictionaryapi.com/api/v1/entries/${language}/${word}`;
   return fetch(url)
     .then(response => {
       if (!response.ok) throw new Error(`Dictionary lookup failed: ${response.status}`);

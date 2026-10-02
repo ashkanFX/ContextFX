@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   exportPdfBtn.addEventListener('click', () => {
-    chrome.tabs.create({ url: chrome.runtime.getURL('popup/print.html') });
+    chrome.tabs.create({ url: chrome.runtime.getURL('src/export/print.html') });
   });
 
   chrome.storage.onChanged.addListener((changes, area) => {

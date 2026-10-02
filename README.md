@@ -40,36 +40,35 @@ Current extension files:
 ```text
 ContextFX/
 ├── manifest.json
-├── content-script.js
-├── service-worker.js
 ├── icons/
 ├── popup/
 │   ├── popup.html
 │   ├── popup.css
-│   ├── popup.js
-│   ├── print.html
-│   ├── print.css
-│   └── print.js
+│   └── popup.js
 ├── src/
-│   ├── translator/
-│   │   └── README.md
+│   ├── background/
+│   │   └── service-worker.js
+│   ├── content/
+│   │   └── content-script.js
+│   ├── export/
+│   │   ├── print.html
+│   │   ├── print.css
+│   │   └── print.js
 │   └── shared/
 │       ├── README.md
 │       ├── dictionary.js
 │       └── vocabulary.js
-├── docs/
-│   └── README.md
 ├── README.md
 ```
 
 ## Architecture
 - Chrome Manifest V3
-- Content script: detects eligible double-clicks, highlights the word, and sends page context (`content-script.js`)
-- Background service worker: looks up dictionary data, stores reminders, increments usage counts, and updates priorities (`service-worker.js`)
+- Content script: detects eligible double-clicks, highlights the word, and sends page context (`src/content/`)
+- Background service worker: looks up dictionary data, stores reminders, increments usage counts, and updates priorities (`src/background/`)
 - Popup: shows recent vocabulary, aggregate counts, priorities, and source links (`popup/`)
 - Shared vocabulary helper: groups records and totals usage across source pages (`src/shared/vocabulary.js`)
 - Shared dictionary helper: normalizes API responses and keeps attribution metadata (`src/shared/dictionary.js`)
-- PDF report: renders all saved vocabulary and invokes Chrome's print dialog (`popup/print.html`)
+- PDF report: renders all saved vocabulary and invokes Chrome's print dialog (`src/export/print.html`)
 
 ## Development / Run locally
 1. Clone the repo and open Chrome's extensions page: `chrome://extensions/`.

@@ -63,7 +63,7 @@
 
     const info = getWordAtPoint(e); // Determine the word under the click.
     if(!info) return; // Stop if no word was detected.
-    const {word, range} = info; // Extract the word and its DOM range.
+    const {word, range} = info; // Extract the selected word and its DOM range.
     const el = highlightRange(range); // Highlight the selected word in the page.
     if(el){
       // store metadata

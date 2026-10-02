@@ -149,18 +149,67 @@ h1 {
   gap: 3px;
   padding: 8px 10px;
   border-radius: 10px;
-  background: rgba(91, 92, 230, 0.03);
-  border: 1px solid rgba(91, 92, 230, 0.08);
+  background: #fff7cc;
+  border: 1px solid #e7d889;
+  color: #302a16;
 }
 
 .word-text {
   font-weight: 700;
-  color: var(--text);
+  color: #302a16;
 }
 
-.word-url {
-  color: var(--muted);
+.word-stats {
+  color: #51471f;
   font-size: 11px;
+}
+
+.reminder-label {
+  color: #695400;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.priority-control {
+  align-items: center;
+  color: #51471f;
+  display: flex;
+  font-size: 11px;
+  gap: 6px;
+}
+
+.priority-select {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid #d7c56d;
+  border-radius: 4px;
+  color: #302a16;
+  font: inherit;
+  padding: 2px 5px;
+}
+
+.word-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.page-link {
+  color: #51471f;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.page-snapshot {
+  color: #51471f;
+  display: -webkit-box;
+  font-size: 11px;
+  line-height: 1.35;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .empty-state {
@@ -174,6 +223,14 @@ h1 {
   display: flex;
   gap: 10px;
   margin-top: 14px;
+}
+
+.export-btn {
+  background: #fff7cc;
+  border: 1px solid #d7c56d;
+  color: #302a16;
+  margin-top: 12px;
+  width: 100%;
 }
 
 button {

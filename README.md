@@ -1,12 +1,14 @@
 # ContextFX
 
-ContextFX is a Chrome extension for learning vocabulary while browsing the web. Users can click a word on a page, save it, and later review or manage it in a local dashboard.
+ContextFX is a Chrome Manifest V3 extension for collecting vocabulary while browsing. Double-click a word in page text to save a reminder with its source page, track its usage and priority, and export the vocabulary list as a PDF.
 
 ## What this project does
-- Lets the user click a word on any webpage.
-- Highlights the selected word on the page.
-- Saves the word and page URL in local browser storage.
-- Gives the user a dashboard to view, search, add, and delete saved words.
+- Double-clicking ordinary page text highlights and saves the word as a reminder. Link text, form controls, and words already highlighted by ContextFX are ignored.
+- Stores the word, page title, URL, and up to 12,000 characters of visible page text in `chrome.storage.local`.
+- Counts each eligible capture. Capturing the same word at another eligible occurrence on the same page increments its count; words already highlighted by ContextFX are skipped. Saving the word on another page adds a source record. The popup aggregates counts case-insensitively and shows the number of distinct sites.
+- Supports Low, Normal, and High priority. A word's priority is shared across all its saved source pages.
+- Shows the five most recently saved unique words in the popup, including usage, priority, source-page links, and a page-text preview.
+- Exports the complete vocabulary, usage totals, site counts, priorities, and source-page links. The report opens Chrome's print dialog; choose **Save as PDF** to create the PDF.
 
 ## Translation / language support
 This project should eventually support a translator feature so words can be converted into the user's own language.
@@ -19,7 +21,7 @@ The extension should allow a user to:
 - store translated definitions locally for later study.
 
 ### Recommended translation flow
-1. User clicks a word on a page.
+1. User double-clicks a word on a page.
 2. The content script captures the text.
 3. The extension sends the word to a translation module.
 4. The translation module converts the word to the target language.
@@ -31,79 +33,60 @@ The extension should allow a user to:
 - Google Translate or other translation service
 - Local language dictionary for offline use
 
-### Recommended structure for this feature
-Create a separate module dedicated to language conversion, such as:
-- `src/translator/` for translation logic
-- `src/shared/` for common helpers, logging, and data models
-- `src/extension/` for browser-extension behavior
-
-This keeps the translator logic separate from the browser UI and makes future feature work easier.
-
 ## Project structure
-A clean development structure for this project could look like this:
+Current extension files:
 
 ```text
 ContextFX/
 ├── manifest.json
 ├── content-script.js
 ├── service-worker.js
-├── options.html
-├── styles.css
 ├── icons/
 ├── popup/
 │   ├── popup.html
 │   ├── popup.css
-│   └── popup.js
+│   ├── popup.js
+│   ├── print.html
+│   ├── print.css
+│   └── print.js
 ├── src/
-│   ├── extension/
-│   │   └── browser logic and UI actions
 │   ├── translator/
-│   │   └── text translation and language conversion
+│   │   └── README.md
 │   └── shared/
-│       ├── logger.js
-│       └── common utilities and storage helpers
+│       ├── README.md
+│       └── vocabulary.js
 ├── docs/
-│   └── feature notes and future planning
+│   └── README.md
 ├── README.md
-└── .gitignore
 ```
-
-This is a recommended separation, not a strict requirement. The extension can still work from the root while new features grow in a more controlled way.
 
 ## Architecture
 - Chrome Manifest V3
-- Content script: detects clicks and highlights the clicked word (`content-script.js`)
-- Background service worker: receives save requests and persists entries (`service-worker.js`)
-- Options page: UI for managing vocabulary (`options.html`, `styles.css`)
-- Translator module: planned separate area for word-to-language conversion (`src/translator/`)
+- Content script: detects eligible double-clicks, highlights the word, and sends page context (`content-script.js`)
+- Background service worker: stores reminders, increments usage counts, and updates priorities (`service-worker.js`)
+- Popup: shows recent vocabulary, aggregate counts, priorities, and source links (`popup/`)
+- Shared vocabulary helper: groups records and totals usage across source pages (`src/shared/vocabulary.js`)
+- PDF report: renders all saved vocabulary and invokes Chrome's print dialog (`popup/print.html`)
 
 ## Development / Run locally
 1. Clone the repo and open Chrome's extensions page: `chrome://extensions/`.
 2. Enable Developer mode.
 3. Click Load unpacked and select this project folder.
-4. Open a webpage, click a word to save it.
-5. Open the extension Options page to view saved words.
+4. Open a webpage and double-click a word outside links and form controls to save it as a reminder.
+5. Open the extension popup to review recent words, usage, source sites, and priorities.
+6. Select **Export PDF**, then choose **Save as PDF** in Chrome's print dialog.
 
 ## Development plan
-### Phase 1
-- Improve the options page and UI/UX
-- Add better search and sort options
-- Improve saved item data handling
-
-### Phase 2
-- Add translation support for user language
-- Support multiple languages
-- Let the user select a target language in settings
-
-### Phase 3
-- Add spaced repetition learning
-- Add favorites and progress tracking
-- Export/import vocabulary data
+### Planned
+- Translate saved words into a user-selected language.
+- Add spaced repetition and study progress.
+- Add vocabulary import/export formats beyond PDF.
 
 ## Notes
-- The extension currently stores simple records such as `{ word, url, created }`.
-- Exact duplicates for the same page are ignored.
-- Translation support, language selection, and advanced study features are planned next.
+- Each source record contains `{ word, url, title, pageContent, reminder, usageCount, priority, created }`.
+- A new word/source record starts with `usageCount: 1` and `priority: "normal"`. Capturing the same word on another eligible occurrence at that URL increments its count and refreshes the saved page context.
+- Legacy records without a usage count are treated as one use.
+- Page text snapshots are limited to the first 12,000 characters of visible text; this is not a full offline copy of the webpage.
 
 ## Contributing
 Pull requests and improvements are welcome. If you want to add the translator feature, start by creating the translation logic in `src/translator/` and keep the browser extension code separate from the language logic.

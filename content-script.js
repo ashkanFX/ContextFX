@@ -2,7 +2,7 @@
 (function(){ // Wrap the script in an IIFE so the code runs in isolation and does not leak variables into the page.
   // inject minimal styles for highlight
   const style = document.createElement('style'); // Create a <style> element to hold the CSS used for highlighting selected words.
-  style.textContent = `.contextfx-highlight{background:#fff7cc;border-radius:3px;box-shadow:0 1px 0 rgba(0,0,0,0.04);cursor:pointer}`; // Define the visual style for the highlighted text: pale yellow background, rounded corners, subtle shadow, and pointer cursor.
+  style.textContent = `.contextfx-highlight{background:#fff7cc !important;color:#302a16 !important;border-radius:3px;box-shadow:0 1px 0 rgba(0,0,0,0.04);cursor:pointer}`; // Keep highlighted text readable against the pale yellow background.
   document.head && document.head.appendChild(style); // Insert the style element into the page's <head> if the head exists.
 
   function getRangeAtPoint(x,y){ // Return the DOM text range at a given screen coordinate.
@@ -55,11 +55,11 @@
     }
   }
 
-  document.addEventListener('click', e => { // Listen for click events across the page.
-    // ignore clicks on inputs or existing highlights
-    const tag = e.target && e.target.tagName; // Get the clicked element's tag name.
+  document.addEventListener('dblclick', e => { // Save a word as a reminder when it is double-clicked.
+    const target = e.target instanceof Element ? e.target : e.target && e.target.parentElement;
+    const tag = target && target.tagName; // Get the clicked element's tag name.
     if(tag && /INPUT|TEXTAREA|BUTTON|SELECT/.test(tag)) return; // Ignore interaction with form controls so text input is not affected.
-    if(e.target && e.target.classList && e.target.classList.contains('contextfx-highlight')) return; // Ignore clicks on words that are already highlighted.
+    if(target && (target.closest('a') || target.closest('.contextfx-highlight'))) return; // Ignore link text and words already saved on this page.
 
     const info = getWordAtPoint(e); // Determine the word under the click.
     if(!info) return; // Stop if no word was detected.
@@ -67,7 +67,13 @@
     const el = highlightRange(range); // Highlight the selected word in the page.
     if(el){
       // store metadata
-      chrome.runtime.sendMessage({type:'save-word', word: word, url: location.href}, () => {}); // Send the saved word and page URL to the extension's background script for storage.
+      chrome.runtime.sendMessage({
+        type: 'save-reminder',
+        word,
+        url: location.href,
+        title: document.title,
+        pageContent: (document.body && document.body.innerText || '').slice(0, 12000),
+      }, () => {}); // Save the word and a bounded text snapshot of its page.
     }
   }, true); // Use capture mode so this handler runs before page-level click handlers.
 })();

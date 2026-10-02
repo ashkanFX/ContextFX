@@ -1,0 +1,96 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: #fff;
+  color: #292617;
+  font: 12px/1.45 Georgia, "Times New Roman", serif;
+  margin: 0;
+}
+
+.report {
+  margin: 36px auto;
+  max-width: 1100px;
+  padding: 0 28px;
+}
+
+.report-header {
+  border-bottom: 2px solid #d7c56d;
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+}
+
+.eyebrow {
+  color: #695400;
+  font: 700 10px/1.2 Arial, sans-serif;
+  letter-spacing: 0.08em;
+  margin: 0 0 7px;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-size: 26px;
+  margin: 0;
+}
+
+.report-summary {
+  color: #51471f;
+  font: 12px/1.4 Arial, sans-serif;
+  margin: 8px 0 0;
+}
+
+table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+}
+
+th,
+td {
+  border-bottom: 1px solid #e2dfd1;
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+th {
+  background: #fff7cc;
+  color: #302a16;
+  font: 700 10px/1.3 Arial, sans-serif;
+  text-transform: uppercase;
+}
+
+.report-word {
+  font-weight: 700;
+}
+
+a {
+  color: #51471f;
+}
+
+.empty-report {
+  color: #51471f;
+  text-align: center;
+}
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  .report {
+    margin: 0;
+    max-width: none;
+    padding: 0;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tr {
+    break-inside: avoid;
+  }
+}

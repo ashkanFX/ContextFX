@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       row.appendChild(sources);
       rows.appendChild(row);
+      
     });
 
     window.setTimeout(() => window.print(), 250);

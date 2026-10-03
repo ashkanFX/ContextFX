@@ -8,6 +8,7 @@ function getDictionary(word, language, vocab) {
   );
   if (cached) return Promise.resolve(cached.dictionary);
 
+
   const url = `https://freedictionaryapi.com/api/v1/entries/${language}/${word}`;
   return fetch(url)
     .then(response => {

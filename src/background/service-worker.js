@@ -20,21 +20,7 @@ function getDictionary(word, language, vocab) {
 
 // Background service worker handles reminder and priority messages.
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if(message && message.type === 'set-priority'){
-    const word = (message.word || '').trim().toLowerCase();
-    const priority = ['low', 'normal', 'high'].includes(message.priority) ? message.priority : 'normal';
-    if(!word) return;
-
-    chrome.storage.local.get({vocab: []}, data => {
-      const vocab = data.vocab || [];
-      vocab.forEach(entry => {
-        if((entry.word || '').trim().toLowerCase() === word) entry.priority = priority;
-      });
-      chrome.storage.local.set({vocab}, () => sendResponse({ok: true}));
-    });
-    return true;
-  }
-
+ 
   if(message && message.type === 'save-reminder'){
     const word = message.word || '';
     const url = message.url || (sender && sender.tab && sender.tab.url) || '';
@@ -50,7 +36,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const vocab = data.vocab || [];
       const normalizedWord = word.trim().toLowerCase();
       const exists = vocab.find(v => (v.word || '').trim().toLowerCase() === normalizedWord && v.url === url);
-
+      // check if vocab is exsit 
       getDictionary(word, language, vocab).then(dictionary => {
         if(exists){
           Object.assign(exists, {

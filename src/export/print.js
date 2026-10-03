@@ -9,67 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     row.appendChild(cell);
     return cell;
   }
-
-  function appendDictionary(cell, dictionary) {
-    if (!dictionary) {
-      cell.textContent = 'No dictionary entry available.';
-      return;
-    }
-
-    const language = document.createElement('small');
-    language.className = 'dictionary-language';
-    language.textContent = [dictionary.language.name, ...dictionary.pronunciations].filter(Boolean).join(' · ');
-    cell.appendChild(language);
-
-    dictionary.definitions.forEach(definition => {
-      const meaning = document.createElement('p');
-      meaning.className = 'dictionary-meaning';
-      if (definition.partOfSpeech) {
-        const partOfSpeech = document.createElement('strong');
-        partOfSpeech.textContent = `${definition.partOfSpeech}: `;
-        meaning.appendChild(partOfSpeech);
-      }
-      meaning.appendChild(document.createTextNode(definition.definition));
-      cell.appendChild(meaning);
-
-      definition.examples.forEach(exampleText => {
-        const example = document.createElement('small');
-        example.className = 'dictionary-example';
-        example.textContent = `Example: ${exampleText}`;
-        cell.appendChild(example);
-      });
-    });
-
-    [['Synonyms', dictionary.synonyms], ['Antonyms', dictionary.antonyms]].forEach(([label, terms]) => {
-      if (!terms.length) return;
-      const line = document.createElement('p');
-      line.className = 'dictionary-terms';
-      line.textContent = `${label}: ${terms.join(', ')}`;
-      cell.appendChild(line);
-    });
-
-    const attribution = document.createElement('p');
-    attribution.className = 'dictionary-attribution';
-    if (dictionary.source.url) {
-      const sourceLink = document.createElement('a');
-      sourceLink.href = dictionary.source.url;
-      sourceLink.textContent = 'Source';
-      attribution.append('Source: ', sourceLink);
-    }
-    if (dictionary.source.license.name) {
-      if (attribution.childNodes.length) attribution.append(' · ');
-      if (dictionary.source.license.url) {
-        const licenseLink = document.createElement('a');
-        licenseLink.href = dictionary.source.license.url;
-        licenseLink.textContent = dictionary.source.license.name;
-        attribution.append('License: ', licenseLink);
-      } else {
-        attribution.append(`License: ${dictionary.source.license.name}`);
-      }
-    }
-    if (attribution.childNodes.length) cell.appendChild(attribution);
-  }
-
+ 
   chrome.storage.local.get({ vocab: [] }, result => {
     const groups = ContextFXVocabulary.group(result.vocab || []);
     const totalUses = groups.reduce((total, group) => total + group.usageCount, 0);
@@ -87,11 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
       appendCell(row, String(group.usageCount));
       appendCell(row, String(new Set(group.entries.map(entry => ContextFXVocabulary.getSiteName(entry.url))).size));
       appendCell(row, group.priority.charAt(0).toUpperCase() + group.priority.slice(1));
-
-      const latestEntry = [...group.entries].sort((a, b) => (b.created || 0) - (a.created || 0))[0];
-      const dictionaryCell = document.createElement('td');
-      appendDictionary(dictionaryCell, latestEntry.dictionary);
-      row.appendChild(dictionaryCell);
 
       const sources = document.createElement('td');
       const sourceEntries = [...new Map(group.entries.filter(entry => entry.url).map(entry => [entry.url, entry])).values()];

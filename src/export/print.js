@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
       appendCell(row, String(new Set(group.entries.map(entry => ContextFXVocabulary.getSiteName(entry.url))).size));
       appendCell(row, group.priority.charAt(0).toUpperCase() + group.priority.slice(1));
 
+      
       const sources = document.createElement('td');
       const sourceEntries = [...new Map(group.entries.filter(entry => entry.url).map(entry => [entry.url, entry])).values()];
       sourceEntries.forEach((entry, index) => {

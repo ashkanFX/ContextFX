@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const cell = document.createElement('td');
     if (className) cell.className = className;
     cell.textContent = value;
+    
     row.appendChild(cell);
     return cell;
   }

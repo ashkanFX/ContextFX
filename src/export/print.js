@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
       appendCell(row, 'No saved vocabulary yet.', 'empty-report').colSpan = 6;
       rows.appendChild(row);
     }
-
     groups.forEach(group => {
       const row = document.createElement('tr');
       appendCell(row, group.word, 'report-word');

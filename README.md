@@ -1,6 +1,6 @@
 # ContextFX
 
-ContextFX is a Chrome Manifest V3 extension for collecting vocabulary while browsing. Double-click a word in page text to save a reminder with its source page, track its usage and priority, and export the vocabulary list as a PDF.
+ContextFX is a Chrome Manifest V3 extension for collecting vocabulary while browsing. Double-click a word in page text to save a reminder with its source page, track usage and priority, remove entries individually, and export a polished PDF report.
 
 ## What this project does
 - Double-clicking ordinary page text highlights and saves the word as a reminder. Link text, form controls, and words already highlighted by ContextFX are ignored.
@@ -8,8 +8,9 @@ ContextFX is a Chrome Manifest V3 extension for collecting vocabulary while brow
 - Counts each eligible capture. Capturing the same word at another eligible occurrence on the same page increments its count; words already highlighted by ContextFX are skipped. Saving the word on another page adds a source record. The popup aggregates counts case-insensitively and shows the number of distinct sites.
 - Supports Low, Normal, and High priority. A word's priority is shared across all its saved source pages.
 - Looks up saved words with FreeDictionaryAPI using the page's `lang` value, falling back to English. It stores pronunciations, definitions, examples, synonyms, antonyms, and source/license metadata with the vocabulary.
-- Shows the five most recently saved unique words in the popup, including usage, priority, source-page links, and a page-text preview.
-- Exports the complete vocabulary, usage totals, site counts, priorities, dictionary details, and source-page links. The report opens Chrome's print dialog; choose **Save as PDF** to create the PDF.
+- Shows the five most recently saved unique words in a modern popup UI, including usage totals, source-site counts, source-page links, and page-text previews.
+- Lets users remove each saved word individually from the popup with a dedicated Delete action, keeping the summary in sync with the stored vocabulary.
+- Exports the complete vocabulary, usage totals, site counts, priorities, dictionary details, and source-page links in a modern report layout. The report opens Chrome's print dialog; choose **Save as PDF** to create the PDF.
 
 Dictionary details are cached for matching words and languages across saved sites. If the API is unavailable or has no entry, the word and page reminder are still saved without dictionary details. The extension needs an internet connection for new lookups.
 
@@ -35,7 +36,7 @@ The extension should allow a user to:
 - Local language dictionary for offline use
 
 ## Project structure
-Current extension files:
+Current extension files, including the export report and modern popup UI:
 
 ```text
 ContextFX/
@@ -65,18 +66,18 @@ ContextFX/
 - Chrome Manifest V3
 - Content script: detects eligible double-clicks, highlights the word, and sends page context (`src/content/`)
 - Background service worker: looks up dictionary data, stores reminders, increments usage counts, and updates priorities (`src/background/`)
-- Popup: shows recent vocabulary, aggregate counts, priorities, and source links (`popup/`)
+- Popup: shows recent vocabulary, aggregate counts, priorities, source links, and per-word deletion controls in a modern card layout (`popup/`)
 - Shared vocabulary helper: groups records and totals usage across source pages (`src/shared/vocabulary.js`)
 - Shared dictionary helper: normalizes API responses and keeps attribution metadata (`src/shared/dictionary.js`)
-- PDF report: renders all saved vocabulary and invokes Chrome's print dialog (`src/export/print.html`)
+- PDF report: renders all saved vocabulary in a clean dashboard-style layout and invokes Chrome's print dialog (`src/export/print.html`)
 
 ## Development / Run locally
 1. Clone the repo and open Chrome's extensions page: `chrome://extensions/`.
 2. Enable Developer mode.
 3. Click Load unpacked and select this project folder.
 4. Open a webpage and double-click a word outside links and form controls to save it as a reminder.
-5. Open the extension popup to review recent words, usage, source sites, and priorities.
-6. Select **Export PDF**, then choose **Save as PDF** in Chrome's print dialog.
+5. Open the extension popup to review recent words, usage, source sites, priorities, and delete any saved word with the per-item action.
+6. Select **Export PDF** to open the modern report view, then choose **Save as PDF** in Chrome's print dialog.
 
 The manifest grants the extension host access to `https://freedictionaryapi.com/*` for dictionary lookups.
 

@@ -9,22 +9,27 @@
   <body>
     <main class="report">
       <header class="report-header">
-        <p class="eyebrow">ContextFX</p>
-        <h1>Saved vocabulary</h1>
-        <p id="reportSummary" class="report-summary"></p>
+        <div class="report-title-wrap">
+          <p class="eyebrow">ContextFX</p>
+          <h1>Saved vocabulary</h1>
+        </div>
+        <span class="status-pill">Export</span>
       </header>
-      <table>
-        <thead>
-          <tr>
-            <th scope="col">Word</th>
-            <th scope="col">Uses</th>
-            <th scope="col">Sites</th>
-            <th scope="col">Priority</th>
-             <th scope="col">Source pages</th>
-          </tr>
-        </thead>
-        <tbody id="vocabularyRows"></tbody>
-      </table>
+      <p id="reportSummary" class="report-summary"></p>
+      <section class="report-sheet" aria-label="Saved vocabulary report">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Word</th>
+              <th scope="col">Uses</th>
+              <th scope="col">Sites</th>
+              <th scope="col">Priority</th>
+              <th scope="col">Source pages</th>
+            </tr>
+          </thead>
+          <tbody id="vocabularyRows"></tbody>
+        </table>
+      </section>
     </main>
     <script src="../shared/vocabulary.js"></script>
     <script src="print.js"></script>

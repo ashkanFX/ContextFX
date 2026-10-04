@@ -3,8 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const uniqueWordsEl = document.getElementById("uniqueWords");
   const latestWordEl = document.getElementById("latestWord");
   const recentWordsEl = document.getElementById("recentWords");
-  const openOptionsBtn = document.getElementById("openOptions");
-  const clearWordsBtn = document.getElementById("clearWords");
+   const clearWordsBtn = document.getElementById("clearWords");
   const exportPdfBtn = document.getElementById("exportPdf");
 
   function appendDictionaryDetails(container, dictionary) {
@@ -82,6 +81,20 @@ document.addEventListener("DOMContentLoaded", () => {
     container.appendChild(details);
   }
 
+  function removeWord(wordToDelete) {
+    chrome.storage.local.get({ vocab: [] }, (result) => {
+      const vocab = Array.isArray(result.vocab) ? result.vocab : [];
+      const nextVocab = vocab.filter(
+        (entry) =>
+          (entry.word || "").trim().toLowerCase() !==
+          (wordToDelete || "").trim().toLowerCase(),
+      );
+      chrome.storage.local.set({ vocab: nextVocab }, () => {
+        loadWords();
+      });
+    });
+  }
+
   function renderPopup(items) {
     const words = Array.isArray(items) ? items : [];
     const uniqueWords = ContextFXVocabulary.group(words);
@@ -110,9 +123,21 @@ document.addEventListener("DOMContentLoaded", () => {
       const item = document.createElement("li");
       item.className = "word-item";
 
+      const header = document.createElement("div");
+      header.className = "word-header";
+
       const word = document.createElement("span");
       word.className = "word-text";
       word.textContent = group.word;
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.type = "button";
+      deleteBtn.className = "delete-word-btn";
+      deleteBtn.textContent = "Delete";
+      deleteBtn.setAttribute("aria-label", `Delete ${group.word}`);
+      deleteBtn.addEventListener("click", () => removeWord(group.word));
+
+      header.append(word, deleteBtn);
 
       const sites = new Set(
         group.entries.map((entry) =>
@@ -152,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
         pageSources.appendChild(pageLink);
       });
 
-      item.append(word, usage, reminder, pageSources);
+      item.append(header, usage, reminder, pageSources);
 
       const latestEntry = [...group.entries].sort(
         (a, b) => (b.created || 0) - (a.created || 0),
@@ -174,14 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
       renderPopup(result.vocab || []);
     });
   }
-
-  openOptionsBtn.addEventListener("click", () => {
-    if (chrome.runtime.openOptionsPage) {
-      chrome.runtime.openOptionsPage();
-    } else {
-      chrome.tabs.create({ url: "../options.html" });
-    }
-  });
+ 
 
   clearWordsBtn.addEventListener("click", () => {
     chrome.storage.local.set({ vocab: [] }, () => {

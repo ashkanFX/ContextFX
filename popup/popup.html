@@ -1,54 +1,55 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ContextFX</title>
-    <link rel="stylesheet" href="popup.css" />
-  </head>
-  <body>
-    <div class="popup-shell">
-      <header class="popup-header">
-        <div>
-          <p class="eyebrow">Vocabulary</p>
-          <h1>ContextFX</h1>
-        </div>
-        <span class="status-pill">Local</span>
-      </header>
 
-      <section class="stats" aria-label="Saved words summary">
-        <div class="stat-card">
-          <span id="totalWords" class="stat-value">0</span>
-          <span class="stat-label">Uses</span>
-        </div>
-        <div class="stat-card">
-          <span id="uniqueWords" class="stat-value">0</span>
-          <span class="stat-label">Unique</span>
-        </div>
-        <div class="stat-card wide">
-          <span id="latestWord" class="stat-value small">—</span>
-          <span class="stat-label">Latest</span>
-        </div>
-      </section>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ContextFX</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
 
-      <section class="recent-panel">
-        <div class="panel-header">
-          <h2>Recent words</h2>
-        </div>
-        <ul id="recentWords" class="recent-list" aria-live="polite"></ul>
-      </section>
-
-      <button id="exportPdf" class="export-btn" type="button">Export PDF</button>
-
-      <div class="actions">
-        <button id="openOptions" class="primary-btn" type="button">Open vocab</button>
-        <button id="exportWords" class="secondary-btn" type="button">Export PDF</button>
-        <button id="clearWords" class="secondary-btn" type="button">Clear</button>
+<body>
+  <div class="popup-shell">
+    <header class="popup-header">
+      <div>
+        <p class="eyebrow">Vocabulary</p>
+        <h1>ContextFX</h1>
       </div>
-      <p id="exportStatus" class="export-status" role="status" aria-live="polite"></p>
-    </div>
+      <span class="status-pill">Local</span>
+    </header>
 
-    <script src="../src/shared/vocabulary.js"></script>
-    <script src="popup.js"></script>
-  </body>
+    <section class="stats" aria-label="Saved words summary">
+      <div class="stat-card">
+        <span id="totalWords" class="stat-value">0</span>
+        <span class="stat-label">Uses</span>
+      </div>
+      <div class="stat-card">
+        <span id="uniqueWords" class="stat-value">0</span>
+        <span class="stat-label">Unique</span>
+      </div>
+      <div class="stat-card wide">
+        <span id="latestWord" class="stat-value small">—</span>
+        <span class="stat-label">Latest</span>
+      </div>
+    </section>
+
+    <section class="recent-panel">
+      <div class="panel-header">
+        <h2>Recent words</h2>
+      </div>
+      <ul id="recentWords" class="recent-list" aria-live="polite"></ul>
+    </section>
+
+
+    <div class="actions">
+      <button id="exportPdf" class="export-btn" type="button">Export PDF</button>
+      <button id="clearWords" class="secondary-btn" type="button">Clear</button>
+    </div>
+    <p id="exportStatus" class="export-status" role="status" aria-live="polite"></p>
+  </div>
+
+  <script src="../src/shared/vocabulary.js"></script>
+  <script src="popup.js"></script>
+</body>
+
 </html>

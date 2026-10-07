@@ -3,7 +3,7 @@
   // Wrap the script in an IIFE so the code runs in isolation and does not leak variables into the page.
   // inject minimal styles for highlight
   const style = document.createElement("style"); // Create a <style> element to hold the CSS used for highlighting selected words.
-  style.textContent = `.contextfx-highlight{background:#16355c !important;color:#ffffff !important;border-radius:3px;box-shadow:0 1px 0 rgba(01,01,01,01.01);cursor:pointer}`; // Use the brand navy with readable contrast for saved words.
+  style.textContent = `::selection{background:#16355c !important;color:#ffffff !important}.contextfx-highlight{background:#16355c !important;color:#ffffff !important;border-radius:3px;box-shadow:0 1px 0 rgba(22,53,92,0.18);cursor:pointer}`; // Match text selection and saved words to the brand palette.
   document.head && document.head.appendChild(style); // Insert the style element into the page's <head> if the head exists.
 
   function getRangeAtPoint(x, y) {

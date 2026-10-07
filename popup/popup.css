@@ -32,6 +32,27 @@
 
 * {
   box-sizing: border-box;
+  scrollbar-color: var(--teal) var(--surface-muted);
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--surface-muted);
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 2px solid var(--surface-muted);
+  border-radius: 8px;
+  background: var(--teal);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--navy);
 }
 
 html,

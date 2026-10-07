@@ -1,100 +1,98 @@
 # ContextFX
 
-ContextFX is a Chrome Manifest V3 extension for collecting vocabulary while browsing. Double-click a word in page text to save a reminder with its source page, track usage and priority, remove entries individually, and export a polished PDF report.
+ContextFX is a Chrome Manifest V3 extension for collecting vocabulary while you browse. Double-click a word in page text to save it with its source page, dictionary information, and a Persian translation. Review recent words in the popup or export your full collection as a PDF.
 
-## What this project does
-- Double-clicking ordinary page text highlights and saves the word as a reminder. Link text, form controls, and words already highlighted by ContextFX are ignored.
-- Stores the word, page title, URL, and up to 12,000 characters of visible page text in `chrome.storage.local`.
-- Counts each eligible capture. Capturing the same word at another eligible occurrence on the same page increments its count; words already highlighted by ContextFX are skipped. Saving the word on another page adds a source record. The popup aggregates counts case-insensitively and shows the number of distinct sites.
-- Supports Low, Normal, and High priority. A word's priority is shared across all its saved source pages.
-- Looks up saved words with FreeDictionaryAPI using the page's `lang` value, falling back to English. It stores pronunciations, definitions, examples, synonyms, antonyms, and source/license metadata with the vocabulary.
-- Shows the five most recently saved unique words in a modern popup UI, including usage totals, source-site counts, source-page links, and page-text previews.
-- Lets users remove each saved word individually from the popup with a dedicated Delete action, keeping the summary in sync with the stored vocabulary.
-- Exports the complete vocabulary, usage totals, site counts, priorities, dictionary details, and source-page links in a modern report layout. The report opens Chrome's print dialog; choose **Save as PDF** to create the PDF.
+## Features
 
-Dictionary details are cached for matching words and languages across saved sites. If the API is unavailable or has no entry, the word and page reminder are still saved without dictionary details. The extension needs an internet connection for new lookups.
+- **Quick capture:** Double-click a word in ordinary page text to highlight and save it. Link text, form controls, and words already highlighted by ContextFX are ignored.
+- **Page context:** Each saved word includes the page URL and title, plus a snapshot of up to 12,000 characters of visible page text.
+- **Usage tracking:** Repeated captures of a saved word on the same page increment its usage count. Captures from other pages are stored as additional source records. The popup groups matching words case-insensitively and aggregates usage and site counts.
+- **Dictionary details:** Looks up the word with FreeDictionaryAPI using the page language when available, falling back to English. The popup can show pronunciations, definitions, examples, synonyms, antonyms, and source/license attribution.
+- **Persian meaning:** Looks up an English-to-Persian translation with MyMemory and stores its `responseData.translatedText` as `persianTranslation` on the saved entry. Translation is optional: a failed lookup does not prevent saving a word.
+- **Modern popup:** Shows summary statistics and up to five recent unique words, with source links, translations, dictionary details, and page-text previews. Words can be deleted individually or the entire collection can be cleared.
+- **Export report:** Opens a full vocabulary report with total uses, unique words, source sites, Persian meanings, priorities, and source-page links. Use **Export PDF**, then choose **Save as PDF** in Chrome's print dialog.
+- **Light and dark themes:** The popup and export report share a theme preference.
 
-## Future translation support
-Dictionary definitions are available now; translating definitions into a user-selected language is still planned.
+## Install locally
 
-### Goal
-The extension should allow a user to:
-- save a word in the original language,
-- translate it into their preferred language,
-- view the original word and translated meaning side by side,
-- store translated definitions locally for later study.
+1. Clone or download this repository.
+2. Open `chrome://extensions/` in Chrome.
+3. Enable **Developer mode**.
+4. Click **Load unpacked** and select the project folder containing `manifest.json`.
+5. Open a webpage and double-click a word outside links and form controls.
+6. Open the ContextFX popup to review saved words, change the theme, delete entries, or clear the collection.
+7. Select **Export PDF** to open the report, then choose **Export PDF** and save the print output as a PDF.
 
-### Recommended translation flow
-1. The user selects a target language.
-2. A translation service translates a saved word or definition.
-3. ContextFX stores the translation alongside the original dictionary entry.
+After changing extension files, reload ContextFX from `chrome://extensions/`.
 
-### Example translation model choices
-- Built-in dictionary lookup
-- OpenAI / cloud translation API
-- Google Translate or other translation service
-- Local language dictionary for offline use
+## Network access
+
+The extension makes requests to:
+
+- `https://freedictionaryapi.com/*` for dictionary entries.
+- `https://api.mymemory.translated.net/*` for English-to-Persian translations.
+
+An internet connection is needed for new lookups. If either service is unavailable, the word can still be saved; dictionary details or the Persian meaning may be absent.
 
 ## Project structure
-Current extension files, including the export report and modern popup UI:
 
 ```text
 ContextFX/
 ├── manifest.json
 ├── icons/
+│   └── icon128.png
 ├── popup/
 │   ├── popup.html
 │   ├── popup.css
 │   └── popup.js
-├── src/
-│   ├── background/
-│   │   └── service-worker.js
-│   ├── content/
-│   │   └── content-script.js
-│   ├── export/
-│   │   ├── print.html
-│   │   ├── print.css
-│   │   └── print.js
-│   └── shared/
-│       ├── README.md
-│       ├── dictionary.js
-│       └── vocabulary.js
-├── README.md
+└── src/
+    ├── background/
+    │   └── service-worker.js
+    ├── content/
+    │   └── content-script.js
+    ├── export/
+    │   ├── print.html
+    │   ├── print.css
+    │   └── print.js
+    └── shared/
+        ├── dictionary.js
+        └── vocabulary.js
 ```
 
 ## Architecture
-- Chrome Manifest V3
-- Content script: detects eligible double-clicks, highlights the word, and sends page context (`src/content/`)
-- Background service worker: looks up dictionary data, stores reminders, increments usage counts, and updates priorities (`src/background/`)
-- Popup: shows recent vocabulary, aggregate counts, priorities, source links, and per-word deletion controls in a modern card layout (`popup/`)
-- Shared vocabulary helper: groups records and totals usage across source pages (`src/shared/vocabulary.js`)
-- Shared dictionary helper: normalizes API responses and keeps attribution metadata (`src/shared/dictionary.js`)
-- PDF report: renders all saved vocabulary in a clean dashboard-style layout and invokes Chrome's print dialog (`src/export/print.html`)
 
-## Development / Run locally
-1. Clone the repo and open Chrome's extensions page: `chrome://extensions/`.
-2. Enable Developer mode.
-3. Click Load unpacked and select this project folder.
-4. Open a webpage and double-click a word outside links and form controls to save it as a reminder.
-5. Open the extension popup to review recent words, usage, source sites, priorities, and delete any saved word with the per-item action.
-6. Select **Export PDF** to open the modern report view, then choose **Save as PDF** in Chrome's print dialog.
+- **Content script** (`src/content/content-script.js`): detects eligible double-clicks, highlights the selected word, and sends its page context to the extension.
+- **Background service worker** (`src/background/service-worker.js`): looks up dictionary and translation data and saves or updates vocabulary records in `chrome.storage.local`.
+- **Popup** (`popup/`): groups saved entries, displays recent vocabulary and summary statistics, and provides delete, clear, theme, and export actions.
+- **Shared helpers** (`src/shared/`): normalize dictionary responses and group vocabulary records.
+- **Export report** (`src/export/`): renders the full saved vocabulary and supports a print-friendly PDF layout.
 
-The manifest grants the extension host access to `https://freedictionaryapi.com/*` for dictionary lookups.
+## Stored vocabulary
 
-## Development plan
-### Planned
-- Translate saved words into a user-selected language.
-- Add spaced repetition and study progress.
-- Add vocabulary import/export formats beyond PDF.
+Each source record contains the word, page URL and title, page-text snapshot, reminder flag, usage count, priority, creation time, and any available dictionary data or Persian translation. The optional fields are:
 
-## Notes
-- Each source record contains `{ word, url, title, pageContent, reminder, usageCount, priority, created, dictionary }`. The optional `dictionary` field contains normalized API data and its source/license attribution.
-- A new word/source record starts with `usageCount: 1` and `priority: "normal"`. Capturing the same word on another eligible occurrence at that URL increments its count and refreshes the saved page context.
-- Legacy records without a usage count are treated as one use.
-- Page text snapshots are limited to the first 12,000 characters of visible text; this is not a full offline copy of the webpage.
+- `dictionary`: normalized FreeDictionaryAPI data, including source and license attribution.
+- `persianTranslation`: the Persian text returned by MyMemory.
+
+New records start with a usage count of `1` and a normal priority. The current capture flow preserves an existing priority but does not provide a priority-editing control in the popup. Older records without a usage count are treated as one use.
+
+The collection is stored locally in Chrome extension storage. Page-text snapshots are limited to the first 12,000 characters of visible page text and are not a full offline copy of the webpage.
+
+## Development notes
+
+ContextFX uses plain HTML, CSS, and JavaScript; no build step is required. To check the JavaScript syntax with Node.js:
+
+```sh
+node --check src/background/service-worker.js
+node --check src/content/content-script.js
+node --check popup/popup.js
+node --check src/export/print.js
+```
 
 ## Contributing
-Pull requests and improvements are welcome. If you want to add the translator feature, start by creating the translation logic in `src/translator/` and keep the browser extension code separate from the language logic.
+
+Bug reports and improvements are welcome. Keep browser-extension APIs in the extension layers and shared data normalization/grouping in `src/shared/`.
 
 ## License
-Specify a license (for example MIT) if you plan to publish the project.
+
+No license is currently specified. Add a `LICENSE` file before distributing the project under a particular license.

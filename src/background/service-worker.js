@@ -1,72 +1,112 @@
-importScripts('../shared/dictionary.js');
+importScripts("../shared/dictionary.js");
 
 // Background service worker: looks up and persists saved vocabulary.
-function getDictionary(word, language, vocab) { 
-  const cached = vocab.find(entry =>
-    (entry.word || '').trim().toLowerCase() === word.trim().toLowerCase() &&
-    entry.dictionary && entry.dictionary.language.code === language
+function getDictionary(word, language, vocab) {
+  const cached = vocab.find(
+    (entry) =>
+      (entry.word || "").trim().toLowerCase() === word.trim().toLowerCase() &&
+      entry.dictionary &&
+      entry.dictionary.language.code === language,
   );
   if (cached) return Promise.resolve(cached.dictionary);
 
-
   const url = `https://freedictionaryapi.com/api/v1/entries/${language}/${word}`;
   return fetch(url)
-    .then(response => {
-      if (!response.ok) throw new Error(`Dictionary lookup failed: ${response.status}`);
+    .then((response) => {
+      if (!response.ok)
+        throw new Error(`Dictionary lookup failed: ${response.status}`);
       return response.json();
     })
-    .then(response => ContextFXDictionary.normalize(response, language))
+    .then((response) => ContextFXDictionary.normalize(response, language))
     .catch(() => null);
 }
 
+function translate(word) {
+  return fetch(
+    `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|fa`,
+  )
+    .then((response) => {
+      if (!response.ok)
+        throw new Error(`Translation lookup failed: ${response.status}`);
+      return response.json();
+    })
+    .then((response) => {
+      const translatedText = response.responseData?.translatedText;
+      return typeof translatedText === "string" && translatedText.trim()
+        ? translatedText.trim()
+        : null;
+    })
+    .catch(() => null);
+}
 // Background service worker handles reminder and priority messages.
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
- 
-  if(message && message.type === 'save-reminder'){
-    const word = message.word || '';
-    const url = message.url || (sender && sender.tab && sender.tab.url) || '';
-    const title = message.title || '';
-    const pageContent = message.pageContent || '';
-    const requestedLanguage = String(message.language || 'en').toLowerCase().split(/[-_]/)[0];
-    const language = /^[a-z]{2,3}$/.test(requestedLanguage) ? requestedLanguage : 'en';
-    if(!word) {
+  if (message && message.type === "save-reminder") {
+    const word = message.word || "";
+    const url = message.url || (sender && sender.tab && sender.tab.url) || "";
+    const title = message.title || "";
+    const pageContent = message.pageContent || "";
+    const requestedLanguage = String(message.language || "en")
+      .toLowerCase()
+      .split(/[-_]/)[0];
+    const language = /^[a-z]{2,3}$/.test(requestedLanguage)
+      ? requestedLanguage
+      : "en";
+    if (!word) {
       return;
     }
 
-    chrome.storage.local.get({vocab: []}, data => {
+    chrome.storage.local.get({ vocab: [] }, (data) => {
       const vocab = data.vocab || [];
       const normalizedWord = word.trim().toLowerCase();
-      const exists = vocab.find(v => (v.word || '').trim().toLowerCase() === normalizedWord && v.url === url);
-      // check if vocab is exsit 
-      getDictionary(word, language, vocab).then(dictionary => {
-        if(exists){
-          Object.assign(exists, {
-            title,
-            pageContent,
-            reminder: true,
-            usageCount: Math.max(1, Number(exists.usageCount) || 1) + 1,
-            priority: exists.priority || 'normal',
-            created: Date.now(),
-          });
-          if(dictionary) exists.dictionary = dictionary;
-        } else {
-          const priorEntry = vocab.find(entry => (entry.word || '').trim().toLowerCase() === normalizedWord);
-          const entry = {
-            word,
-            url,
-            title,
-            pageContent,
-            reminder: true,
-            usageCount: 1,
-            priority: priorEntry ? priorEntry.priority || 'normal' : 'normal',
-            created: Date.now(),
-          };
-          if(dictionary) entry.dictionary = dictionary;
-          vocab.push(entry);
-        }
+      const exists = vocab.find(
+        (v) =>
+          (v.word || "").trim().toLowerCase() === normalizedWord &&
+          v.url === url,
+      );
+      Promise.all([getDictionary(word, language, vocab), translate(word)]).then(
+        ([dictionary, persianTranslation]) => {
+          if (exists) {
+            Object.assign(exists, {
+              title,
+              pageContent,
+              reminder: true,
+              usageCount: Math.max(1, Number(exists.usageCount) || 1) + 1,
+              priority: exists.priority || "normal",
+              created: Date.now(),
+            });
+            if (dictionary) exists.dictionary = dictionary;
+            if (persianTranslation)
+              exists.persianTranslation = persianTranslation;
+          } else {
+            const priorEntry = vocab.find(
+              (entry) =>
+                (entry.word || "").trim().toLowerCase() === normalizedWord,
+            );
+            const entry = {
+              word,
+              url,
+              title,
+              pageContent,
+              reminder: true,
+              usageCount: 1,
+              priority: priorEntry ? priorEntry.priority || "normal" : "normal",
+              created: Date.now(),
+            };
+            if (dictionary) entry.dictionary = dictionary;
+            if (persianTranslation)
+              entry.persianTranslation = persianTranslation;
+            vocab.push(entry);
+          }
 
-        chrome.storage.local.set({vocab}, () => sendResponse({ok: true, dictionaryAvailable: Boolean(dictionary)}));
-      });
+          chrome.storage.local.set({ vocab }, () =>
+            sendResponse({
+              ok: true,
+              dictionaryAvailable: Boolean(dictionary),
+              translationAvailable: Boolean(persianTranslation),
+            }),
+          );
+        },
+      );
     });
     return true;
   }

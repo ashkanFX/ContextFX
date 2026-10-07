@@ -1,52 +1,71 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ContextFX</title>
+  <meta name="theme-color" content="#16355c" />
+  <title>ContextFX · Vocabulary</title>
   <link rel="stylesheet" href="popup.css" />
 </head>
 
 <body>
-  <div class="popup-shell">
+  <main class="popup-shell">
     <header class="popup-header">
-      <div>
-        <p class="eyebrow">Vocabulary</p>
-        <h1>ContextFX</h1>
+      <a class="brand" href="#" aria-label="ContextFX vocabulary">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span>Context<span class="brand-accent">FX</span></span>
+      </a>
+      <div class="header-actions">
+        <button id="themeToggle" class="icon-button" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+          <span id="themeIcon" aria-hidden="true">🌙</span>
+        </button>
+        <span class="status-pill"><span aria-hidden="true">●</span> Local</span>
       </div>
-      <span class="status-pill">Local</span>
     </header>
 
-    <section class="stats" aria-label="Saved words summary">
+    <section class="hero" aria-labelledby="heroTitle">
+      <p class="eyebrow"><span aria-hidden="true">✨</span> Your learning workspace</p>
+      <h1 id="heroTitle">Words that <span>stick.</span></h1>
+      <p class="hero-description">Build your vocabulary, one discovery at a time.</p>
+    </section>
+
+    <section class="stats" aria-label="Vocabulary statistics">
       <div class="stat-card">
+        <span class="stat-icon" aria-hidden="true">🔁</span>
         <span id="totalWords" class="stat-value">0</span>
-        <span class="stat-label">Uses</span>
+        <span class="stat-label">Total uses</span>
       </div>
       <div class="stat-card">
+        <span class="stat-icon" aria-hidden="true">📚</span>
         <span id="uniqueWords" class="stat-value">0</span>
-        <span class="stat-label">Unique</span>
+        <span class="stat-label">Unique words</span>
       </div>
       <div class="stat-card wide">
+        <span class="stat-icon" aria-hidden="true">💡</span>
         <span id="latestWord" class="stat-value small">—</span>
-        <span class="stat-label">Latest</span>
+        <span class="stat-label">Latest saved</span>
       </div>
     </section>
 
     <section class="recent-panel">
       <div class="panel-header">
-        <h2>Recent words</h2>
+        <div>
+          <h2>✨ Recent words</h2>
+          <p>Your latest vocabulary finds</p>
+        </div>
+        <span class="live-badge">Your library</span>
       </div>
       <ul id="recentWords" class="recent-list" aria-live="polite"></ul>
     </section>
 
-
     <div class="actions">
-      <button id="exportPdf" class="export-btn" type="button">Export PDF</button>
-      <button id="clearWords" class="secondary-btn" type="button">Clear</button>
+      <button id="exportPdf" class="button button-primary" type="button"><span aria-hidden="true">📄</span> Export PDF</button>
+      <button id="clearWords" class="button button-ghost" type="button">Clear words</button>
     </div>
     <p id="exportStatus" class="export-status" role="status" aria-live="polite"></p>
-  </div>
+    <footer class="popup-footer">Made for curious minds <span aria-hidden="true">🧠</span></footer>
+  </main>
 
   <script src="../src/shared/vocabulary.js"></script>
   <script src="popup.js"></script>

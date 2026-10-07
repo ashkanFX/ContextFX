@@ -1,35 +1,92 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ContextFX Vocabulary</title>
+    <meta name="theme-color" content="#16355c" />
+    <title>ContextFX · Vocabulary report</title>
     <link rel="stylesheet" href="print.css" />
   </head>
   <body>
     <main class="report">
-      <header class="report-header">
-        <div class="report-title-wrap">
-          <p class="eyebrow">ContextFX</p>
-          <h1>Saved vocabulary</h1>
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="ContextFX vocabulary report">
+          <span class="brand-mark" aria-hidden="true">✦</span>
+          <span>Context<span class="brand-accent">FX</span></span>
+        </a>
+        <div class="toolbar" aria-label="Report actions">
+          <button id="themeToggle" class="button button-ghost" type="button" aria-pressed="false">
+            <span id="themeIcon" aria-hidden="true">🌙</span>
+            <span id="themeLabel">Dark mode</span>
+          </button>
+          <button id="printReport" class="button button-primary" type="button">
+            <span aria-hidden="true">📄</span>
+            Export PDF
+          </button>
         </div>
-        <span class="status-pill">Export</span>
       </header>
-      <p id="reportSummary" class="report-summary"></p>
-      <section class="report-sheet" aria-label="Saved vocabulary report">
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">Word</th>
-              <th scope="col">Uses</th>
-              <th scope="col">Sites</th>
-              <th scope="col">Priority</th>
-              <th scope="col">Source pages</th>
-            </tr>
-          </thead>
-          <tbody id="vocabularyRows"></tbody>
-        </table>
+
+      <section class="hero" aria-labelledby="reportTitle">
+        <div class="hero-copy">
+          <p class="eyebrow"><span aria-hidden="true">✨</span> Your learning workspace</p>
+          <h1 id="reportTitle">Vocabulary <span>report</span></h1>
+          <p class="hero-description">A clear snapshot of the words you’ve collected along the way.</p>
+          <p id="reportSummary" class="report-summary"></p>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <span class="orbit orbit-one"></span>
+          <span class="orbit orbit-two"></span>
+          <span class="hero-spark">✦</span>
+          <span class="hero-emoji">🧠</span>
+        </div>
       </section>
+
+      <section class="stats-grid" aria-label="Vocabulary statistics">
+        <article class="stat-card">
+          <span class="stat-icon" aria-hidden="true">📚</span>
+          <span id="statWords" class="stat-value">0</span>
+          <span class="stat-label">Unique words</span>
+        </article>
+        <article class="stat-card">
+          <span class="stat-icon" aria-hidden="true">🔁</span>
+          <span id="statUses" class="stat-value">0</span>
+          <span class="stat-label">Total uses</span>
+        </article>
+        <article class="stat-card">
+          <span class="stat-icon" aria-hidden="true">🌐</span>
+          <span id="statSites" class="stat-value">0</span>
+          <span class="stat-label">Source sites</span>
+        </article>
+      </section>
+
+      <section class="report-section" aria-label="Saved vocabulary report">
+        <div class="section-heading">
+          <div>
+            <h2>✨ Saved words</h2>
+            <p>Your personal collection, ready to review or share.</p>
+          </div>
+          <span class="live-badge"><span aria-hidden="true">●</span> Your library</span>
+        </div>
+        <div class="report-sheet">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Word</th>
+                <th scope="col">فارسی · Meaning</th>
+                <th scope="col">Uses</th>
+                <th scope="col">Sites</th>
+                <th scope="col">Priority</th>
+                <th scope="col">Source pages</th>
+              </tr>
+            </thead>
+            <tbody id="vocabularyRows"></tbody>
+          </table>
+        </div>
+      </section>
+      <footer class="report-footer">
+        <span>Made for curious minds <span aria-hidden="true">💡</span></span>
+        <span>ContextFX · Keep learning, one word at a time</span>
+      </footer>
     </main>
     <script src="../shared/vocabulary.js"></script>
     <script src="print.js"></script>

@@ -12,7 +12,8 @@
     "scripting"
   ],
   "host_permissions": [
-    "https://freedictionaryapi.com/*"
+    "https://freedictionaryapi.com/*",
+    "https://api.mymemory.translated.net/*"
   ],
   "action": {
     "default_popup": "popup/popup.html"

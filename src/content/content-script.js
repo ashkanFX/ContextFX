@@ -56,19 +56,18 @@
   }
 
   document.addEventListener('dblclick', e => { // Save a word as a reminder when it is double-clicked.
-    console.log(e)
-    debugger
     const target = e.target instanceof Element ? e.target : e.target && e.target.parentElement;
     const tag = target && target.tagName; // Get the clicked element's tag name.
     if(tag && /INPUT|TEXTAREA|BUTTON|SELECT/.test(tag)) return; // Ignore interaction with form controls so text input is not affected.
     if(target && (target.closest('a') || target.closest('.contextfx-highlight'))) return; // Ignore link text and words already saved on this page.
+ 
 
     const info = getWordAtPoint(e); // Determine the word under the click.
     if(!info) return; // Stop if no word was detected.
     const {word, range} = info; // Extract the selected word and its DOM range.
     const el = highlightRange(range); // Highlight the selected word in the page.
-    
-    if(el){
+    debugger
+    if(el && isNaN(word)){
       // store metadata
       chrome.runtime.sendMessage({
         type: 'save-reminder',

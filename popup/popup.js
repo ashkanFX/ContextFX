@@ -3,8 +3,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const uniqueWordsEl = document.getElementById("uniqueWords");
   const latestWordEl = document.getElementById("latestWord");
   const recentWordsEl = document.getElementById("recentWords");
-   const clearWordsBtn = document.getElementById("clearWords");
+  const clearWordsBtn = document.getElementById("clearWords");
   const exportPdfBtn = document.getElementById("exportPdf");
+  const themeToggle = document.getElementById("themeToggle");
+  const themeIcon = document.getElementById("themeIcon");
+
+  function setTheme(theme) {
+    const isDark = theme === "dark";
+    document.documentElement.dataset.theme = isDark ? "dark" : "light";
+    themeToggle.setAttribute("aria-pressed", String(isDark));
+    themeToggle.setAttribute(
+      "aria-label",
+      `Switch to ${isDark ? "light" : "dark"} mode`,
+    );
+    themeIcon.textContent = isDark ? "☀️" : "🌙";
+    localStorage.setItem("contextfx-export-theme", isDark ? "dark" : "light");
+  }
 
   function appendDictionaryDetails(container, dictionary) {
     if (!dictionary) return;
@@ -106,6 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
     totalWordsEl.textContent = String(totalUsage);
     uniqueWordsEl.textContent = String(uniqueWords.length);
     latestWordEl.textContent = uniqueWords.length ? uniqueWords[0].word : "—";
+    latestWordEl.title = uniqueWords.length ? uniqueWords[0].word : "";
 
     recentWordsEl.innerHTML = "";
 
@@ -140,9 +155,9 @@ document.addEventListener("DOMContentLoaded", () => {
       header.append(word, deleteBtn);
 
       const sites = new Set(
-        group.entries.map((entry) =>
-          ContextFXVocabulary.getSiteName(entry.url),
-        ),
+        group.entries
+          .filter((entry) => entry.url)
+          .map((entry) => ContextFXVocabulary.getSiteName(entry.url)),
       );
       const usage = document.createElement("small");
       usage.className = "word-stats";
@@ -182,6 +197,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const latestEntry = [...group.entries].sort(
         (a, b) => (b.created || 0) - (a.created || 0),
       )[0];
+      const persianTranslation = [...group.entries]
+        .sort((a, b) => (b.created || 0) - (a.created || 0))
+        .find((entry) => entry.persianTranslation)?.persianTranslation;
+      if (persianTranslation) {
+        const translation = document.createElement("p");
+        translation.className = "persian-translation";
+        translation.lang = "fa";
+        translation.dir = "rtl";
+        translation.textContent = persianTranslation;
+        item.appendChild(translation);
+      }
       appendDictionaryDetails(item, latestEntry.dictionary);
       if (latestEntry.pageContent) {
         const snapshot = document.createElement("small");
@@ -200,6 +226,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
  
+
+  themeToggle.addEventListener("click", () => {
+    setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+  });
+  setTheme(localStorage.getItem("contextfx-export-theme") || "light");
 
   clearWordsBtn.addEventListener("click", () => {
     chrome.storage.local.set({ vocab: [] }, () => {

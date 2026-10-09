@@ -21,7 +21,7 @@ function getDictionary(word, language, vocab) {
     .catch(() => null);
 }
 
-function translate(word) {
+function translate(word, vocab) {
   return fetch(
     `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|fa`,
   )
@@ -31,6 +31,47 @@ function translate(word) {
       return response.json();
     })
     .then((response) => {
+      const normalizedWord = word
+        .trim()
+        .toLocaleLowerCase()
+        .replace(/[^\p{L}\p{N}]/gu, "");
+      const knownTranslations = new Set(
+        vocab
+          .filter(
+            (entry) =>
+              (entry.word || "").trim().toLocaleLowerCase() ===
+              word.trim().toLocaleLowerCase(),
+          )
+          .flatMap((entry) => (entry.persianTranslation || "").split("،"))
+          .map((translation) => translation.trim().toLocaleLowerCase())
+          .filter(Boolean),
+      );
+      const translations = [
+        ...new Set(
+          (Array.isArray(response.matches) ? response.matches : [])
+            .filter((match) => {
+              const segment = String(match.segment || "")
+                .trim()
+                .toLocaleLowerCase()
+                .replace(/[^\p{L}\p{N}]/gu, "");
+              return (
+                segment === normalizedWord &&
+                typeof match.translation === "string" &&
+                /\p{L}/u.test(match.translation)
+              );
+            })
+            .sort((first, second) => Number(second.match) - Number(first.match))
+            .map((match) => match.translation.trim())
+            .filter(
+              (translation) =>
+                translation &&
+                !knownTranslations.has(translation.toLocaleLowerCase()),
+            ),
+        ),
+      ];
+      if (translations.length) return translations.join("، ");
+      if (knownTranslations.size) return null;
+
       const translatedText = response.responseData?.translatedText;
       return typeof translatedText === "string" && translatedText.trim()
         ? translatedText.trim()
@@ -63,7 +104,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           (v.word || "").trim().toLowerCase() === normalizedWord &&
           v.url === url,
       );
-      Promise.all([getDictionary(word, language, vocab), translate(word)]).then(
+      Promise.all([
+        getDictionary(word, language, vocab),
+        translate(word, vocab),
+      ]).then(
         ([dictionary, persianTranslation]) => {
           if (exists) {
             Object.assign(exists, {
